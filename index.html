@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aisha | Kinetic Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,900&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #000;
+            --bg-light: #fff;
+            --accent: #666;
+            --ease: steps(6, end);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            overflow-x: hidden;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        /* --- BACKGROUND STRUCTURE --- */
+        #cursor {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 10px; 
+            height: 10px; 
+            background: #fff;
+            border-radius: 50%; 
+            pointer-events: none; 
+            z-index: 10000;
+            transform: translate(-50%, -50%); /* Center cursor to mouse */
+            mix-blend-mode: difference;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, mix-blend-mode 0.3s ease;
+        }
+
+        #cursor::after {
+            content: "VIEW PAGE";
+            opacity: 0;
+            color: #000;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+        }
+
+        #cursor.view-page {
+            width: 80px;
+            height: 80px;
+            background-color: #fff;
+            mix-blend-mode: normal;
+        }
+
+        #cursor.view-page::after {
+            opacity: 1;
+        }
+
+        #cursor.hover-link {
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border: 1px solid #fff;
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(128,128,128,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(128,128,128,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        #site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            z-index: 9990;
+        }
+
+        .marquee-container {
+            position: relative; 
+            width: 100%;
+            overflow: hidden;
+            background: var(--accent);
+            color: var(--bg-dark);
+            padding: 2vh 0;
+            white-space: nowrap;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            font-size: 2vw; 
+            text-transform: uppercase;
+            font-style: italic;
+            font-weight: 900;
+            margin: 0;
+            animation: scroll-left 30s linear infinite; 
+        }
+
+        .marquee-content span {
+            margin-right: 2vw;
+            -webkit-text-stroke: 1px var(--bg-dark);
+            color: transparent;
+            transition: color 0.3s ease;
+        }
+        
+        .marquee-container:hover .marquee-content span {
+            color: var(--bg-dark);
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
+        }
+
+        .nav-container {
+            display: flex;
+            gap: 3vw;
+            padding: 2.5vh 5vw; 
+            mix-blend-mode: difference; 
+        }
+        
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+            padding-bottom: 5px;
+        }
+
+        .nav-short {
+            display: none;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: #fff;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        /* --- THE LAYERING ENGINE --- */
+        .section-wrapper {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        .section {
+            grid-area: 1 / 1; 
+            min-height: 100vh;
+            padding: 15vw 5vw 10vw 5vw;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+            position: relative;
+        }
+
+        .pixel-overlay {
+            grid-area: 1 / 1;
+            z-index: 50;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .pixel-block {
+            width: 101%; height: 101%;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: transform 0.8s var(--ease), opacity 0.1s linear;
+        }
+
+        #to-light .pixel-block { background: var(--bg-light); }
+        #to-dark .pixel-block { background: var(--bg-dark); }
+        .pixel-block.active { opacity: 1; transform: translateY(0); }
+
+        /* --- CONTENT STYLES --- */
+        .section-dark { background: var(--bg-dark); color: #fff; }
+        .section-light { background: var(--bg-light); color: #000; }
+
+        /* TEXT ANIMATION & HERO VIDEO */
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.4; 
+            filter: grayscale(100%) contrast(1.2); 
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2; 
+        }
+
+        .hero-line { 
+            font-size: 14vw; 
+            text-transform: uppercase; 
+            line-height: 0.8; 
+            font-weight: 900; 
+            overflow: hidden; 
+            padding-bottom: 2vw; 
+            margin-bottom: -2vw;
+        }
+        
+        .reveal-text {
+            display: block;
+            transform: translateY(110%); 
+        }
+        
+        .layout-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10vw;
+            margin-top: 5vh;
+        }
+
+        /* --- WIREFRAME BUILDING BLOCKS --- */
+        .wireframe-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .wf-block {
+            position: absolute;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background: transparent;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .wf-img {
+            width: 12vw;
+            height: 12vw;
+            top: -3vw;
+            right: -6vw;
+            /* Diagonal lines creating an image placeholder effect */
+            background-image: 
+                linear-gradient(to bottom right, transparent 48%, rgba(0,0,0,0.1) 49%, rgba(0,0,0,0.1) 51%, transparent 52%), 
+                linear-gradient(to top right, transparent 48%, rgba(0,0,0,0.1) 49%, rgba(0,0,0,0.1) 51%, transparent 52%);
+            animation: float-slow 6s ease-in-out infinite;
+        }
+
+        .wf-text-group {
+            top: 60%;
+            left: -8vw;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: none;
+            animation: float-slow 8s ease-in-out infinite reverse;
+        }
+
+        .wf-line {
+            height: 6px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        
+        .wf-line:nth-child(1) { width: 10vw; }
+        .wf-line:nth-child(2) { width: 14vw; }
+        .wf-line:nth-child(3) { width: 8vw; }
+
+        .wf-btn {
+            width: 8vw;
+            height: 2.5vw;
+            border-radius: 30px;
+            bottom: -4vw;
+            right: 4vw;
+            border: 1px solid rgba(0,0,0,0.3);
+            animation: float-slow 5s ease-in-out infinite 1s;
+        }
+
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* --- TIMELINE & GSAP LAYOUT --- */
+        .timeline-pin-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            margin: 2rem 0;
+            padding-bottom: 10vh;
+        }
+
+        .timeline-scroll {
+            display: flex; 
+            width: max-content; 
+            padding: 0 10vw; 
+            align-items: center;
+            position: relative;
+        }
+
+        .timeline-scroll::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 0;
+        }
+
+        .card { 
+            width: 400px; 
+            margin-right: 8vw; 
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-img { 
+            width: 100%; 
+            aspect-ratio: 16/9; 
+            background: linear-gradient(135deg, rgba(100, 100, 100, 0.3), rgba(50, 50, 50, 0.5));
+            border: 1px solid #333; 
+            transition: transform 0.3s ease;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: grayscale(100%) contrast(1.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.03) 10px,
+                rgba(255,255,255,0.03) 20px
+            );
+            pointer-events: none;
+        }
+
+        #pin2 {
+            margin-bottom: 150vh !important;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .card-content {
+            padding-top: 1rem;
+            padding-bottom: 2rem;
+            background: var(--bg-dark);
+            border-left: 2px solid #333;
+            padding-left: 1.5rem;
+            transition: border-left-color 0.3s ease;
+        }
+
+        .card:hover .card-content {
+            border-left-color: #666;
+        }
+
+        /* ML Cards - New Structure */
+        #pin2 .card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        #pin2 .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        #pin2 .card.expanded {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        #pin2 .card-content {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #pin2 .card.expanded .card-content {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        #pin2 .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        #pin2 .card-excerpt {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        #pin2 .card-full-text {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #pin2 .card.expanded .card-full-text {
+            display: block;
+        }
+
+        #pin2 .card-year {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .year-marker {
+            margin-top: 1rem;
+            position: relative;
+            text-align: center;
+            font-size: 12px;
+            font-family: monospace;
+            color: #888;
+            padding-top: 10px;
+        }
+
+        .year-marker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 10px;
+            background: var(--accent);
+        }
+
+        .meta { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
+        .meta::before { content: ''; width: 30px; height: 1px; background: var(--accent); }
+
+        .section > h2 {
+            position: relative;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section > h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #fff, transparent);
+        }
+
+        /* --- OFF-CANVAS DRAWER --- */
+        #offcanvas-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 450px;
+            max-width: 100%;
+            height: 100vh;
+            background: var(--bg-light);
+            color: var(--bg-dark);
+            z-index: 9999;
+            padding: 4rem 3rem;
+            box-shadow: -10px 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            transition: right 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+
+        #offcanvas-drawer.open {
+            right: 0;
+        }
+
+        .drawer-close {
+            align-self: flex-end;
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .drawer-close:hover {
+            opacity: 1;
+        }
+
+        #drawer-image {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            margin-bottom: 2rem;
+            border: 1px solid #ddd;
+        }
+        #drawer-title { font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1; }
+        #drawer-year { font-family: monospace; font-size: 0.9rem; color: #666; margin-bottom: 2rem; display: block; border-bottom: 1px solid #ddd; padding-bottom: 1rem;}
+        #drawer-desc { font-size: 1rem; line-height: 1.8; color: #333; }
+
+        .audio-widget {
+            position: fixed;
+            right: -1.75rem;
+            bottom: -1.75rem;
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+
+        .audio-toggle {
+            width: 228px;
+            height: 228px;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            padding: 0;
+            display: grid;
+            place-items: center;
+        }
+
+        .audio-toggle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+            animation: spinDisk 8s linear infinite;
+            transition: filter 0.3s ease;
+        }
+
+        .audio-widget.open .audio-toggle img,
+        .audio-toggle:hover img {
+            filter: brightness(1.08);
+        }
+
+        @keyframes spinDisk {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .audio-panel {
+            width: 220px;
+            padding: 1rem;
+            background: rgba(10, 10, 10, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            gap: 0.85rem;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .audio-widget.open .audio-panel {
+            display: flex;
+        }
+
+        .audio-panel-title {
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #bbb;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .audio-button {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #111;
+            color: #fff;
+            padding: 0.55rem 0.8rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .audio-volume {
+            width: 100%;
+            accent-color: #fff;
+        }
+
+        /* --- CONTACT --- */
+        #contact { 
+            height: 100vh; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            position: relative; 
+            text-align: center; 
+            margin-top: 10vh;
+            z-index: 2;
+        }
+        .sq { position: absolute; background: #fff; mix-blend-mode: difference; animation: driftUp var(--d) linear infinite; }
+        @keyframes driftUp { from { transform: translateY(110vh); } to { transform: translateY(-20vh); } }
+
+        .contact-link {
+            font-size: 1.2rem; 
+            font-weight: 300; 
+            letter-spacing: 1px;
+            color: #fff;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .contact-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--accent);
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+
+        .contact-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        @media (hover: none), (pointer: coarse) {
+            * { cursor: auto; }
+            #cursor { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: 15px;
+            }
+
+            body {
+                overflow-x: hidden;
+            }
+
+            #site-header {
+                background: rgba(0, 0, 0, 0.86);
+                backdrop-filter: blur(12px);
+            }
+
+            .marquee-container {
+                padding: 0.65rem 0;
+            }
+
+            .marquee-content {
+                font-size: 0.8rem;
+            }
+
+            .marquee-content span {
+                margin-right: 1rem;
+                -webkit-text-stroke: 0.5px var(--bg-dark);
+            }
+
+            .nav-container {
+                display: block;
+                position: relative;
+                height: 2.8rem;
+                padding: 0;
+                mix-blend-mode: normal;
+            }
+
+            .nav-link {
+                font-size: 0.72rem;
+                letter-spacing: 0.12em;
+                min-width: 0;
+                position: fixed;
+                text-align: center;
+                top: 3.55rem;
+                transform: translateY(-50%);
+                white-space: nowrap;
+            }
+
+            .nav-link:nth-child(1) { left: 1rem; }
+            .nav-link:nth-child(2) { left: 50vw; transform: translate(-50%, -50%); }
+            .nav-link:nth-child(3) { left: 68vw; right: auto; transform: translate(-50%, -50%); }
+
+            .nav-full { display: none; }
+            .nav-short { display: inline; }
+
+            .section-wrapper {
+                display: block;
+            }
+
+            .section {
+                min-height: auto;
+                padding: 7.75rem 1.15rem 4rem;
+            }
+
+            .hero-section {
+                min-height: 100svh;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .pixel-overlay {
+                display: none;
+            }
+
+            .hero-video {
+                opacity: 0.32;
+            }
+
+            .hero-line {
+                font-size: clamp(4.8rem, 22vw, 7.5rem);
+                line-height: 0.86;
+                padding-bottom: 0.5rem;
+                margin-bottom: -0.4rem;
+                overflow: visible;
+            }
+
+            .meta {
+                font-size: 0.62rem;
+                letter-spacing: 0.18em;
+                line-height: 1.5;
+                gap: 0.65rem;
+            }
+
+            .meta::before {
+                width: 22px;
+            }
+
+            .layout-split {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                margin-top: 2.5rem;
+            }
+
+            .wireframe-container {
+                width: 100%;
+            }
+
+            .wireframe-container h2 {
+                font-size: clamp(2.7rem, 15vw, 4.5rem) !important;
+            }
+
+            .wf-img {
+                width: 4.8rem;
+                height: 4.8rem;
+                top: -1.5rem;
+                right: 0.25rem;
+            }
+
+            .wf-text-group {
+                top: 72%;
+                right: 0;
+                left: auto;
+            }
+
+            .wf-line:nth-child(1) { width: 4.8rem; }
+            .wf-line:nth-child(2) { width: 6.2rem; }
+            .wf-line:nth-child(3) { width: 3.8rem; }
+
+            .wf-btn {
+                width: 5.5rem;
+                height: 2rem;
+                right: 1rem;
+                bottom: -2.25rem;
+            }
+
+            .section > h2 {
+                font-size: clamp(2.1rem, 10vw, 3rem) !important;
+                line-height: 1.05;
+            }
+
+            .section > p.fade-up {
+                font-size: 0.85rem !important;
+                line-height: 1.6;
+            }
+
+            .timeline-pin-container {
+                height: auto;
+                min-height: 0;
+                display: block;
+                overflow: visible;
+                margin: 2rem 0 4rem;
+                padding: 0;
+            }
+
+            .timeline-scroll {
+                display: grid;
+                width: 100%;
+                padding: 0;
+                gap: 1.25rem;
+            }
+
+            .timeline-scroll::before {
+                top: 0;
+                left: 0;
+                width: 1px;
+                height: 100%;
+            }
+
+            .card {
+                width: 100%;
+                margin-right: 0;
+                padding-left: 1rem;
+            }
+
+            .card-img {
+                aspect-ratio: 4 / 3;
+            }
+
+            .card-content {
+                padding: 1rem 0 1.5rem 1rem;
+            }
+
+            .year-marker {
+                text-align: left;
+                margin-left: 1rem;
+            }
+
+            .year-marker::before {
+                left: 0;
+            }
+
+            #pin2 {
+                margin-bottom: 0 !important;
+            }
+
+            #pin2 .card {
+                padding-left: 0;
+            }
+
+            #pin2 .card:hover,
+            #pin2 .card.expanded {
+                transform: none;
+                box-shadow: none;
+            }
+
+            #pin2 .card-content {
+                min-height: auto;
+                padding: 1rem;
+            }
+
+            #offcanvas-drawer {
+                width: 100vw;
+                padding: calc(1.25rem + env(safe-area-inset-top)) 1.25rem 1.25rem;
+            }
+
+            .drawer-close {
+                align-self: flex-start;
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+
+            #drawer-title {
+                font-size: 2rem;
+            }
+
+            #drawer-desc {
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            .audio-widget {
+                right: auto;
+                left: 0.75rem;
+                bottom: 0.75rem;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .audio-toggle {
+                width: 76px;
+                height: 76px;
+            }
+
+            .audio-panel {
+                width: min(78vw, 220px);
+                padding: 0.8rem;
+            }
+
+            #contact {
+                min-height: 100svh;
+                height: auto;
+                margin-top: 0;
+                padding: 6rem 1rem;
+            }
+
+            #contact h2 {
+                font-size: clamp(3.3rem, 17vw, 5.5rem) !important;
+                overflow-wrap: anywhere;
+            }
+
+            .contact-link {
+                font-size: 0.95rem;
+                overflow-wrap: anywhere;
+            }
+
+            #contact p,
+            #contact address {
+                font-size: 0.95rem !important;
+                line-height: 1.6;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .nav-container {
+                padding-inline: 0;
+            }
+
+            .nav-link:nth-child(1) { left: 0.75rem; }
+            .nav-link:nth-child(3) { left: 68vw; right: auto; }
+
+            .nav-link {
+                font-size: 0.64rem;
+                letter-spacing: 0.08em;
+            }
+
+            .hero-line {
+                font-size: clamp(4rem, 21vw, 6rem);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .reveal-text,
+            .fade-up {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div class="bg-grid"></div>
+    <audio id="page-audio" loop preload="auto">
+        <source src="./photo/ikigai.mp3" type="audio/mpeg">
+    </audio>
+    <div class="audio-widget" id="audio-widget">
+        <div class="audio-panel">
+            <div class="audio-panel-title">Now Playing</div>
+            <div class="audio-controls">
+                <button type="button" id="audio-play-toggle" class="audio-button interactive-link">Pause</button>
+                <span id="audio-status" style="font-size: 0.75rem; color: #bbb;">Playing</span>
+            </div>
+            <label for="audio-volume" style="font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #bbb;">Volume</label>
+            <input id="audio-volume" class="audio-volume" type="range" min="0" max="1" step="0.01" value="0.45">
+        </div>
+        <button type="button" id="audio-toggle" class="audio-toggle interactive-link" aria-label="Toggle audio controls">
+            <img src="./photo/disk.png" alt="Audio controls">
+        </button>
+    </div>
+
+    <header id="site-header">
+        <div class="marquee-container">
+            <p class="marquee-content serif">
+                <span>Python • Machine Learning • YOLO • MediaPipe • n8n • WordPress • HTML • CSS • JavaScript • SQL • Automation • AI Systems • </span>
+                <span>Python • Machine Learning • YOLO • MediaPipe • n8n • WordPress • HTML • CSS • JavaScript • SQL • Automation • AI Systems • </span>
+            </p>
+        </div>
+        <nav class="nav-container">
+            <a href="index.html" class="nav-link interactive-link serif">HOME</a>
+            <a href="about.html" class="nav-link interactive-link serif">ABOUT</a>
+            <a href="board.html" class="nav-link interactive-link serif"><span class="nav-full">CORKBOARD</span><span class="nav-short">BOARD</span></a>
+        </nav>
+    </header>
+
+    <div id="offcanvas-drawer">
+        <div class="drawer-close">[ CLOSE ]</div>
+        <img id="drawer-image" src="" alt="Project image" style="display:none;">
+        <h2 id="drawer-title" class="serif">Project Title</h2>
+        <span id="drawer-year">202X</span>
+        <p id="drawer-desc">Project details will appear here...</p>
+        <div class="drawer-links" style="margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1.5rem;">
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase;">Related Links</h3>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <a href="https://oga.tcu.edu.tw/" target="_blank" rel="noopener noreferrer" class="interactive-link" style="color: #000; text-decoration: underline; font-size: 13px;">OGA - TCU Global Affairs Office</a>
+                    <p style="font-size: 11px; color: #999; margin-top: 0.3rem;">⚠ Work in progress</p>
+                </div>
+                <div>
+                    <a href="https://www.dekangdental.com/" target="_blank" rel="noopener noreferrer" class="interactive-link" style="color: #000; text-decoration: underline; font-size: 13px;">Dekang Dental</a>
+                    <p style="font-size: 11px; color: #999; margin-top: 0.3rem;">⚠ No longer under my management - transferred to client</p>
+                </div>
+                <div>
+                    <a href="https://yksc.com.tw/" target="_blank" rel="noopener noreferrer" class="interactive-link" style="color: #000; text-decoration: underline; font-size: 13px;">Yongkang Construction</a>
+                    <p style="font-size: 11px; color: #999; margin-top: 0.3rem;">⚠ No longer under my management - transferred to client</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-wrapper">
+        <section class="section section-dark hero-section">
+            <video src="./photo/heart.mp4" autoplay loop muted playsinline class="hero-video"></video>
+            
+            <div class="hero-content">
+                <div class="meta fade-up">丘愛笑 Aisha / Portfolio v3.0</div>
+                <h1 class="hero-line serif" id="h-left"><span class="reveal-text">Aisha</span></h1>
+                <h1 class="hero-line serif" style="color:transparent; -webkit-text-stroke:1px var(--accent); font-style:italic;" id="h-right"><span class="reveal-text">Pearl</span></h1>
+            </div>
+        </section>
+        <div class="pixel-overlay" id="to-light"></div>
+    </div>
+
+    <div class="section-wrapper">
+        <section class="section section-light">
+            <div class="meta fade-up">Overview_01</div>
+            <div class="layout-split fade-up">
+                
+                <div class="wireframe-container">
+                    <div class="wf-block wf-img"></div>
+                    <div class="wf-block wf-text-group">
+                        <div class="wf-line"></div>
+                        <div class="wf-line"></div>
+                        <div class="wf-line"></div>
+                    </div>
+                    <div class="wf-block wf-btn"></div>
+                    
+                    <h2 class="serif" style="font-size: 5vw; line-height: 1; position: relative; z-index: 2;">Crafting <br>Digital<br>Experiences.</h2>
+                </div>
+
+                <div>
+                    <p style="line-height: 1.8; color: #444; margin-bottom: 2rem;">
+                        本人為資訊科技與管理學系學生，具備網站設計與維護之實務經驗。熟悉使用 WordPress 建置網站，並具備 HTML 與 CSS 前端開發能力。善於運用 AI 工具優化開發流程，期望持續精進技術，於充滿活力的環境中創造實質價值。
+                    </p>
+                    <div style="border-left: 1px solid #ddd; padding-left: 20px; margin-bottom: 1.5rem;">
+                        <span style="font-size: 10px; color: #999;">TECH STACK:</span>
+                        <p style="font-size: 11px; margin-top: 5px; font-weight: bold;">PYTHON / HTML & CSS / JAVASCRIPT / WORDPRESS / FIGMA / AI TOOLS</p>
+                    </div>
+                    <div style="border-left: 1px solid #ddd; padding-left: 20px;">
+                        <span style="font-size: 10px; color: #999;">EDUCATION & CERTS:</span>
+                        <p style="font-size: 11px; margin-top: 5px;">慈濟大學 資訊科技與管理學系 (2023 - 2027)<br>IT Specialist: JavaScript, Python (Pearson VUE)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="pixel-overlay" id="to-dark"></div>
+    </div>
+
+    <div class="section-wrapper">
+        <section class="section section-dark" style="padding-bottom: 0;">
+            <div class="meta fade-up">Experience_02</div>
+            <h2 class="serif fade-up" style="font-size: 3rem; margin-bottom: 0.5rem;">Web Development</h2>
+            <p class="fade-up" style="font-size: 0.9rem; color: #888; margin-bottom: 1.5rem;">慈濟大學全球處 | 從零建置與優化網站效能</p>
+            
+            <div class="timeline-pin-container" id="pin1">
+                <div class="timeline-scroll">
+                    
+                    <div class="card" data-title="TCU OGA" data-year="2025.02 - Present" data-desc="學校網站建置。從零開始成功建置多個網站，確保網站效能、可用性及視覺品質。工具：WordPress、Elementor、CSS。 (University website development. Successfully built multiple websites from scratch, ensuring performance, usability, and visual quality. Tools: WordPress, Elementor, CSS.)">
+                        <div class="card-img" style="background-image: url('./photo/tcuoga2.png');"></div>
+                        <div class="card-content">
+                            <h3 class="serif">TCU OGA</h3>
+                            <p style="font-size: 0.8rem; color: #aaa; margin-top: 0.5rem;">University portal development & optimization.</p>
+                        </div>
+                        <div class="year-marker">2025</div>
+                    </div>
+                    
+                    <div class="card" data-title="DEKANG DENTAL" data-year="2025" data-desc="使用 WordPress Elementor 與 Figma 設計並維護網站。透過 CSS 客製化版面，提升響應式設計與使用者體驗。 (Using WordPress Elementor and Figma to design and maintain websites. Through CSS custom layouts, enhancing responsive design and user experience.)">
+                        <div class="card-img" style="background-image: url('./photo/dekang.png');"></div>
+                        <div class="card-content">
+                            <h3 class="serif">DEKANG DENTAL</h3>
+                            <p style="font-size: 0.8rem; color: #aaa; margin-top: 0.5rem;">Clinic website built with custom CSS layout.</p>
+                        </div>
+                        <div class="year-marker">2025</div>
+                    </div>
+                    
+                    <div class="card" data-title="YONG KANG CONSTRUCTION" data-year="2025" data-desc="將客戶需求轉化為實際網站功能。負責網站更新、內容上架與結構優化（SEO）。 (Translating client needs into actual website functions. Responsible for website updates, content publishing, and structural optimization (SEO).)">
+                        <div class="card-img" style="background-image: url('./photo/yongkang.png');"></div>
+                        <div class="card-content">
+                            <h3 class="serif">YONG KANG</h3>
+                            <p style="font-size: 0.8rem; color: #aaa; margin-top: 0.5rem;">Construction firm site featuring responsive design & SEO.</p>
+                        </div>
+                        <div class="year-marker">2025</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="meta fade-up" style="margin-top: 5rem;">Projects_03</div>
+            <h2 class="serif fade-up" style="font-size: 3rem; margin-bottom: 0.5rem;">Data & Machine Learning</h2>
+            <p class="fade-up" style="font-size: 0.9rem; color: #888; margin-bottom: 1.5rem;">雙語教育中心 | 研究助理資料處理</p>
+
+            <div class="timeline-pin-container" id="pin2">
+                <div class="timeline-scroll">
+                    
+                    <div class="card" data-title="Pill Swallow Detection System" data-year="2026" data-desc="Developed a real-time pill swallow detection system utilizing YOLO and MediaPipe. Combined object detection with human keypoint analysis and designed multi-condition logic to enhance recognition accuracy. (使用 YOLO 與 MediaPipe 建立即時辨識系統、結合物件偵測與人體關鍵點分析、設計多條件邏輯提升辨識準確度)">
+                        <div class="card-content">
+                            <div class="card-year">2026</div>
+                            <h3 class="card-title">Pill Swallow Detection System</h3>
+                            <p class="card-excerpt">Real-time pill swallow detection system using YOLO and MediaPipe for object detection and human keypoint analysis.</p>
+                            <div class="card-full-text">Developed a real-time pill swallow detection system utilizing YOLO and MediaPipe. Combined object detection with human keypoint analysis and designed multi-condition logic to enhance recognition accuracy. (使用 YOLO 與 MediaPipe 建立即時辨識系統、結合物件偵測與人體關鍵點分析、設計多條件邏輯提升辨識準確度)</div>
+                        </div>
+                        <div class="year-marker">2026</div>
+                    </div>
+
+                    <div class="card" data-title="Emotion Recognition Classifier" data-year="2025" data-desc="Developed an image classification model for emotion recognition with real-time predictions and confidence scores. Implemented comprehensive data preprocessing and model optimization techniques. (建立影像分類模型進行情緒辨識、實作即時預測與信心值顯示、進行資料前處理與模型優化)">
+                        <div class="card-content">
+                            <div class="card-year">2025</div>
+                            <h3 class="card-title">Emotion Recognition Classifier</h3>
+                            <p class="card-excerpt">Image classification model for emotion recognition with real-time predictions and confidence scoring.</p>
+                            <div class="card-full-text">Developed an image classification model for emotion recognition with real-time predictions and confidence scores. Implemented comprehensive data preprocessing and model optimization techniques. (建立影像分類模型進行情緒辨識、實作即時預測與信心值顯示、進行資料前處理與模型優化)</div>
+                        </div>
+                        <div class="year-marker">2025</div>
+                    </div>
+
+                    <div class="card" data-title="ML Fundamentals" data-year="2023.12 - 2024.02" data-desc="應用基礎機器學習概念，進行資料分析並協助建立實證結論。 (Applying foundational machine learning concepts to conduct data analysis and assist in establishing empirical conclusions.)">
+                        <div class="card-content">
+                            <div class="card-year">2023.12 - 2024.02</div>
+                            <h3 class="card-title">ML Fundamentals</h3>
+                            <p class="card-excerpt">Applied foundational machine learning concepts to conduct data analysis and establish empirical conclusions.</p>
+                            <div class="card-full-text">應用基礎機器學習概念，進行資料分析並協助建立實證結論。 (Applying foundational machine learning concepts to conduct data analysis and assist in establishing empirical conclusions.)</div>
+                        </div>
+                        <div class="year-marker">2024</div>
+                    </div>
+                    
+                    <div class="card" data-title="Data Visualization" data-year="2023.12 - 2024.02" data-desc="製作數據視覺化與研究報告，將複雜的研究數據轉化為易於理解的圖表。 (Creating data visualizations and research reports, transforming complex research data into easy-to-understand charts.)">
+                        <div class="card-content">
+                            <div class="card-year">2023.12 - 2024.02</div>
+                            <h3 class="card-title">Data Visualization</h3>
+                            <p class="card-excerpt">Created data visualizations and research reports, transforming complex research data into understandable charts.</p>
+                            <div class="card-full-text">製作數據視覺化與研究報告，將複雜的研究數據轉化為易於理解的圖表。 (Creating data visualizations and research reports, transforming complex research data into easy-to-understand charts.)</div>
+                        </div>
+                        <div class="year-marker">2024</div>
+                    </div>
+                    
+                    <div class="card" data-title="Data Analysis" data-year="2023.12 - 2024.02" data-desc="雙語教育中心研究助理。使用 SPSS、Python、Excel 處理與整理研究資料，進行資料分析。 (Bilingual Education Center Research Assistant. Using SPSS, Python, and Excel to process and organize research data, conduct data analysis.)">
+                        <div class="card-content">
+                            <div class="card-year">2023.12 - 2024.02</div>
+                            <h3 class="card-title">Data Analysis</h3>
+                            <p class="card-excerpt">Research Assistant utilizing SPSS, Python, and Excel to process and analyze research data.</p>
+                            <div class="card-full-text">雙語教育中心研究助理。使用 SPSS、Python、Excel 處理與整理研究資料，進行資料分析。 (Bilingual Education Center Research Assistant. Using SPSS, Python, and Excel to process and organize research data, conduct data analysis.)</div>
+                        </div>
+                        <div class="year-marker">2023</div>
+                    </div>
+
+                </div>
+            </div>
+            
+        </section>
+    </div>
+
+    <section id="contact" class="section section-dark">
+        <h2 class="serif fade-up" style="font-size: 8vw; z-index: 2; position: relative;">CONNECT</h2>
+        
+        <div class="fade-up" style="display: flex; flex-direction: column; gap: 1rem; align-items: center; z-index: 2; position: relative; margin-top: 2rem;">
+            <a href="mailto:11243035@gms.tcu.edu.tw" class="contact-link interactive-link">11243035@gms.tcu.edu.tw</a>
+            <p style="font-size: 1.2rem; font-weight: 300; letter-spacing: 1px;">0903-094-745</p>
+            <address style="font-size: 1rem; color: #888; margin-top: 1rem; font-style: normal;">970 花蓮縣花蓮市介仁街67號</address>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. Grid Generator
+        function populateGrid(id) {
+            const grid = document.getElementById(id);
+            if(!grid) return;
+            for(let i=0; i<200; i++) {
+                const b = document.createElement('div');
+                b.className = 'pixel-block';
+                grid.appendChild(b);
+            }
+        }
+        populateGrid('to-light');
+        populateGrid('to-dark');
+
+        // 2. Custom Inertia Cursor using GSAP quickTo
+        const cursor = document.getElementById('cursor');
+        const pageAudio = document.getElementById('page-audio');
+        const audioWidget = document.getElementById('audio-widget');
+        const audioToggle = document.getElementById('audio-toggle');
+        const audioPlayToggle = document.getElementById('audio-play-toggle');
+        const audioStatus = document.getElementById('audio-status');
+        const audioVolume = document.getElementById('audio-volume');
+        const mobileQuery = window.matchMedia('(max-width: 768px)');
+        let hasStartedAudio = false;
+        let xTo = gsap.quickTo(cursor, "left", {duration: 0.4, ease: "power3"}),
+            yTo = gsap.quickTo(cursor, "top", {duration: 0.4, ease: "power3"});
+
+        window.addEventListener("mousemove", e => {
+            xTo(e.clientX);
+            yTo(e.clientY);
+        });
+
+        function startPageAudio() {
+            if (hasStartedAudio || !pageAudio) return;
+            hasStartedAudio = true;
+            pageAudio.volume = Number(audioVolume?.value || 0.45);
+            pageAudio.play().catch(() => {
+                hasStartedAudio = false;
+            });
+        }
+
+        function syncAudioUI() {
+            const isPlaying = !!pageAudio && !pageAudio.paused;
+            if (audioPlayToggle) audioPlayToggle.textContent = isPlaying ? 'Pause' : 'Play';
+            if (audioStatus) audioStatus.textContent = isPlaying ? 'Playing' : 'Paused';
+        }
+
+        window.addEventListener('wheel', startPageAudio, { passive: true });
+        window.addEventListener('touchmove', startPageAudio, { passive: true });
+        window.addEventListener('keydown', (event) => {
+            if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Space'].includes(event.code)) {
+                startPageAudio();
+            }
+        });
+
+        audioToggle?.addEventListener('click', () => {
+            audioWidget?.classList.toggle('open');
+        });
+
+        audioPlayToggle?.addEventListener('click', () => {
+            if (!pageAudio) return;
+            if (pageAudio.paused) {
+                hasStartedAudio = true;
+                pageAudio.play().catch(() => {
+                    hasStartedAudio = false;
+                });
+            } else {
+                pageAudio.pause();
+            }
+            syncAudioUI();
+        });
+
+        audioVolume?.addEventListener('input', () => {
+            if (pageAudio) pageAudio.volume = Number(audioVolume.value);
+        });
+
+        pageAudio?.addEventListener('play', syncAudioUI);
+        pageAudio?.addEventListener('pause', syncAudioUI);
+        syncAudioUI();
+
+        // 3. Scroll & Transition Logic (Parallax & Pixel Curtains)
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hLeft = document.getElementById('h-left');
+            const hRight = document.getElementById('h-right');
+            
+            if (mobileQuery.matches) {
+                hLeft.style.transform = '';
+                hRight.style.transform = '';
+                return;
+            }
+
+            // Hero Parallax (Applied to the H1 wrapper so it doesn't fight the initial slide-up animation)
+            hLeft.style.transform = `translateX(${scrolled * 0.2}px)`;
+            hRight.style.transform = `translateX(-${scrolled * 0.2}px)`;
+
+            // Upward Curtain Logic
+            document.querySelectorAll('.pixel-overlay').forEach(overlay => {
+                const rect = overlay.parentElement.getBoundingClientRect();
+                const blocks = Array.from(overlay.querySelectorAll('.pixel-block'));
+
+                if (rect.top < 0 && rect.bottom > 0) {
+                    const progress = Math.abs(rect.top) / rect.height;
+                    const threshold = Math.floor(progress * blocks.length * 1.5);
+
+                    blocks.reverse().forEach((b, i) => {
+                        if (i < threshold) b.classList.add('active');
+                        else b.classList.remove('active');
+                    });
+                }
+            });
+        });
+
+        // 4. TEXT ANIMATIONS
+        // A. Initial Hero Slide-Up Reveal
+        gsap.to(".reveal-text", {
+            y: "0%",
+            duration: 1.5,
+            ease: "power4.out",
+            stagger: 0.2, // Delays the second word slightly for a tiered effect
+            delay: 0.3
+        });
+
+        // B. Scroll Fade-Up for text blocks
+        gsap.utils.toArray('.fade-up').forEach(function(elem) {
+            gsap.fromTo(elem, 
+                { y: 40, opacity: 0 }, 
+                {
+                    y: 0, 
+                    opacity: 1, 
+                    duration: 1.2, 
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: elem,
+                        start: "top 85%", // Triggers when the element enters the bottom 15% of viewport
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+
+        // 5. Horizontal Scroll Mapping with GSAP
+        const gsapMedia = gsap.matchMedia();
+        gsapMedia.add("(min-width: 769px)", () => {
+            gsap.utils.toArray('.timeline-pin-container').forEach(container => {
+                let scrollEl = container.querySelector('.timeline-scroll');
+                let scrollWidth = scrollEl.scrollWidth - window.innerWidth;
+                
+                gsap.to(scrollEl, {
+                    x: -scrollWidth,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: container,
+                        pin: true,           
+                        scrub: 1,            
+                        end: () => "+=" + scrollWidth 
+                    }
+                });
+            });
+        });
+
+        // 6. Card Interactions: Cursor State & Off-Canvas Drawer
+        const cards = document.querySelectorAll('.card');
+        const drawer = document.getElementById('offcanvas-drawer');
+        const drawerClose = document.querySelector('.drawer-close');
+        
+        const dTitle = document.getElementById('drawer-title');
+        const dYear = document.getElementById('drawer-year');
+        const dDesc = document.getElementById('drawer-desc');
+        const dImage = document.getElementById('drawer-image');
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                cursor.classList.add('view-page');
+            });
+            card.addEventListener('mouseleave', () => {
+                cursor.classList.remove('view-page');
+            });
+
+            card.addEventListener('click', () => {
+                const cardImg = card.querySelector('.card-img');
+                if (!cardImg) return;
+
+                dTitle.innerText = card.dataset.title;
+                dYear.innerText = card.dataset.year;
+                dDesc.innerText = card.dataset.desc;
+                
+                // Extract background image URL from card-img
+                const bgImage = window.getComputedStyle(cardImg).backgroundImage;
+                if (bgImage && bgImage !== 'none') {
+                    const imageUrl = bgImage.replace(/url\(['"]?([^'"]+)['"]?\)/g, '$1');
+                    dImage.src = imageUrl;
+                    dImage.style.display = 'block';
+                } else {
+                    dImage.style.display = 'none';
+                }
+                
+                drawer.classList.add('open');
+            });
+        });
+
+        // 6.5. ML Card Expand/Collapse Functionality
+        const mlCards = document.querySelectorAll('#pin2 .card');
+        mlCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Prevent the default drawer opening for ML cards
+                e.stopPropagation();
+                
+                // Close any other expanded ML cards
+                mlCards.forEach(otherCard => {
+                    if (otherCard !== card) {
+                        otherCard.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle the clicked card
+                card.classList.toggle('expanded');
+            });
+        });
+
+        // Standard link hover state for custom cursor
+        document.querySelectorAll('.interactive-link').forEach(link => {
+            link.addEventListener('mouseenter', () => cursor.classList.add('hover-link'));
+            link.addEventListener('mouseleave', () => cursor.classList.remove('hover-link'));
+        });
+
+        // Close Drawer
+        drawerClose.addEventListener('click', () => {
+            drawer.classList.remove('open');
+        });
+
+        // 7. Contact Particles
+        const contact = document.getElementById('contact');
+        for(let i=0; i<30; i++) {
+            const s = document.createElement('div');
+            s.className = 'sq';
+            const size = Math.random() * 15 + 2;
+            s.style.width = size + 'px';
+            s.style.height = size + 'px';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.setProperty('--d', (Math.random() * 4 + 3) + 's');
+            s.style.animationDelay = (Math.random() * -5) + 's';
+            contact.appendChild(s);
+        }
+    </script>
+</body>
+</html>
