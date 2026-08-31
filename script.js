@@ -374,8 +374,8 @@ import { animate, stagger } from 'motion';
 
     const scale = () => compact ? 0.62 : Math.max(0.7, Math.min(0.8, window.innerHeight / 1120));
     const centers = compact
-      ? [{ x: 500, y: 450 }, { x: 1030, y: 560 }, { x: 1510, y: 500 }]
-      : [{ x: 505, y: 430 }, { x: 1050, y: 555 }, { x: 1515, y: 500 }];
+      ? [{ x: 500, y: 450 }, { x: 1030, y: 560 }, { x: 1510, y: 500 }, { x: 1680, y: 820 }]
+      : [{ x: 505, y: 430 }, { x: 1050, y: 555 }, { x: 1515, y: 500 }, { x: 1680, y: 820 }];
     const target = (index, axis) => {
       const center = centers[index];
       return axis === 'x'
@@ -383,7 +383,7 @@ import { animate, stagger } from 'motion';
         : window.innerHeight / 2 - center.y * scale();
     };
     const setActiveCluster = (index) => {
-      const cluster = ['web', 'data', 'ml'][index];
+      const cluster = ['web', 'data', 'ml', 'app'][index];
       mapItems.forEach((item) => item.classList.toggle('is-active', item.dataset.mapCluster === cluster));
       artifacts.forEach((artifact) => artifact.classList.toggle('is-cluster-active', artifact.dataset.cluster === cluster));
     };
@@ -400,16 +400,17 @@ import { animate, stagger } from 'motion';
         pin: viewport,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        ...(enableSnap ? { snap: createSoftSnap([0, 0.5, 1], 0.14) } : {}),
+        ...(enableSnap ? { snap: createSoftSnap([0, 1 / 3, 2 / 3, 1], 0.14) } : {}),
         onUpdate: (self) => {
           window.gsap.set(progress, { scaleX: self.progress });
-          setActiveCluster(self.progress < 0.31 ? 0 : self.progress < 0.66 ? 1 : 2);
+          setActiveCluster(Math.min(3, Math.floor(self.progress * 4)));
         }
       }
     });
     timeline
       .to(camera, { x: () => target(1, 'x'), y: () => target(1, 'y'), scale: () => scale() * 1.03, duration: 1, ease: 'none' })
-      .to(camera, { x: () => target(2, 'x'), y: () => target(2, 'y'), scale, duration: 1, ease: 'none' });
+      .to(camera, { x: () => target(2, 'x'), y: () => target(2, 'y'), scale, duration: 1, ease: 'none' })
+      .to(camera, { x: () => target(3, 'x'), y: () => target(3, 'y'), scale, duration: 1, ease: 'none' });
 
     const maxX = compact ? 70 : 130;
     const maxY = compact ? 28 : 72;
@@ -577,6 +578,18 @@ import { animate, stagger } from 'motion';
       qs('.drawer-title', drawer).textContent = card.dataset.project;
       qs('.drawer-year', drawer).textContent = card.dataset.year;
       qs('.drawer-description', drawer).textContent = card.dataset.description;
+      const drawerLink = qs('.drawer-link', drawer);
+      if (drawerLink) {
+        drawerLink.href = card.dataset.link || 'mailto:11243035@gms.tcu.edu.tw';
+        drawerLink.textContent = card.dataset.linkLabel || 'Ask about this project ↗';
+        if (card.dataset.link) {
+          drawerLink.target = '_blank';
+          drawerLink.rel = 'noreferrer';
+        } else {
+          drawerLink.removeAttribute('target');
+          drawerLink.removeAttribute('rel');
+        }
+      }
       const drawerImage = qs('.drawer-image', drawer);
       drawerImage.replaceChildren();
       drawerImage.style.backgroundImage = '';

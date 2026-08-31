@@ -338,7 +338,7 @@ main > section { position: relative; isolation: isolate; }
 .tool-constellation::before { top: 48%; left: 2%; width: 88%; height: 1px; transform: rotate(-12deg); }
 .tool-constellation::after { top: 15%; left: 46%; width: 1px; height: 72%; transform: rotate(16deg); }
 .tool-constellation span { position: absolute; display: grid; min-width: 7.5rem; min-height: 3.1rem; place-items: center; padding: .7rem 1rem; border: 1px solid rgba(255,255,255,.24); background: linear-gradient(135deg, rgba(230,232,232,.2), rgba(70,74,76,.18)); box-shadow: inset 1px 1px rgba(255,255,255,.16), 0 18px 40px rgba(0,0,0,.2); font: 500 .64rem var(--mono); letter-spacing: .07em; text-transform: uppercase; backdrop-filter: blur(8px); will-change: transform, opacity; }
-.tool-constellation span:nth-child(1){top:3%;left:4%}.tool-constellation span:nth-child(2){top:8%;right:6%}.tool-constellation span:nth-child(3){top:30%;left:30%}.tool-constellation span:nth-child(4){top:28%;right:1%}.tool-constellation span:nth-child(5){top:53%;left:5%}.tool-constellation span:nth-child(6){top:55%;right:19%}.tool-constellation span:nth-child(7){bottom:4%;left:22%}.tool-constellation span:nth-child(8){bottom:8%;right:2%}.tool-constellation span:nth-child(9){top:9%;left:42%}.tool-constellation span:nth-child(10){bottom:17%;left:48%}
+.tool-constellation span:nth-child(1){top:3%;left:4%}.tool-constellation span:nth-child(2){top:8%;right:6%}.tool-constellation span:nth-child(3){top:30%;left:30%}.tool-constellation span:nth-child(4){top:28%;right:1%}.tool-constellation span:nth-child(5){top:53%;left:5%}.tool-constellation span:nth-child(6){top:55%;right:19%}.tool-constellation span:nth-child(7){bottom:4%;left:22%}.tool-constellation span:nth-child(8){bottom:8%;right:2%}.tool-constellation span:nth-child(9){top:9%;left:42%}.tool-constellation span:nth-child(10){bottom:17%;left:48%}.tool-constellation span:nth-child(11){top:76%;right:28%}
 .toolkit-link { position: absolute; bottom: 8vh; left: 7vw; }
 
 /* Workboard — smoked cork evidence wall */
@@ -362,7 +362,7 @@ main > section { position: relative; isolation: isolate; }
 .cluster-label { position: absolute; z-index: 2; color: rgba(228,228,222,.68); font-family: var(--mono); transform: rotate(-90deg); transform-origin: left top; }
 .cluster-label span { display: block; margin-bottom: .5rem; font-size: 11px; letter-spacing: .1em; }
 .cluster-label strong { font-size: 20px; letter-spacing: .08em; }
-.cluster-label-web { top: 170px; left: 82px; }.cluster-label-data { top: 510px; left: 825px; }.cluster-label-ml { top: 880px; left: 1190px; }
+.cluster-label-web { top: 170px; left: 82px; }.cluster-label-data { top: 510px; left: 825px; }.cluster-label-ml { top: 880px; left: 1190px; }.cluster-label-app { top: 1040px; left: 1795px; }
 .artifact { --r: 0deg; position: absolute; z-index: 4; display: flex; width: auto; height: auto; flex-direction: column; padding: 16px 16px 18px; overflow: visible; border: 0; border-radius: 1px; background: #d9d8d1; color: #151617; text-align: left; box-shadow: 0 18px 35px rgba(0,0,0,.35), 0 2px 4px rgba(0,0,0,.5); cursor: pointer; transform: rotate(var(--r)); transform-origin: 50% 18px; transition: transform .45s var(--ease), filter .45s, box-shadow .45s; }
 .artifact::after { position: absolute; inset: 0; border: 1px solid rgba(255,255,255,.38); background: linear-gradient(116deg, transparent 0 43%, rgba(255,255,255,.2) 48%, transparent 54%); content: ''; pointer-events: none; }
 .artifact:hover, .artifact:focus-visible, .artifact.is-cluster-active { z-index: 12; filter: grayscale(0) contrast(1.05); transform: rotate(calc(var(--r) * .35)) translateY(-14px) scale(1.025); box-shadow: 0 32px 60px rgba(0,0,0,.52), 0 3px 7px rgba(0,0,0,.45); }
@@ -382,6 +382,7 @@ main > section { position: relative; isolation: isolate; }
 .artifact-data { --r: -2deg; top: 340px; left: 860px; width: 410px; height: 370px; }
 .artifact-emotion { --r: 3deg; top: 585px; left: 1260px; width: 390px; height: 315px; }
 .artifact-pill { --r: -4.5deg; top: 120px; left: 1485px; width: 285px; height: 455px; }
+.artifact-book { --r: 2.4deg; top: 700px; left: 1515px; width: 330px; height: 330px; }
 .drafting-film { position: absolute; top: -54px; right: -52px; z-index: 5; width: 145px; padding: 12px; border: 1px solid rgba(235,238,236,.5); background: rgba(178,185,183,.32); color: rgba(242,244,242,.82); font: 10px/1.5 var(--mono); letter-spacing: .08em; backdrop-filter: blur(3px); transform: rotate(7deg); pointer-events: none; }
 .film-pill { top: auto; right: auto; bottom: 34px; left: -86px; transform: rotate(-7deg); }
 .board-memo { position: absolute; z-index: 3; padding: 14px 18px; background: #aaa9a1; color: #343536; font: 500 12px/1.65 var(--mono); letter-spacing: .04em; box-shadow: 0 8px 18px rgba(0,0,0,.27); }
@@ -459,7 +460,7 @@ body.drawer-open { overflow: hidden; }
   .artifact, .artifact:nth-child(even) { position: relative; top: auto; left: auto; width: min(88vw, 560px); height: min(116vw, 570px); margin: 0 auto; transform: rotate(var(--r)) !important; }
   .artifact:nth-of-type(even) { margin-top: -1rem; }
   .artifact:hover, .artifact:focus-visible { transform: rotate(calc(var(--r) * .35)) translateY(-8px) scale(1.01) !important; }
-  .artifact-tcu { --r: -1.3deg; }.artifact-dekang { --r: 1.5deg; }.artifact-data { --r: -.8deg; }.artifact-emotion { --r: 1deg; }.artifact-pill { --r: -1.2deg; }
+  .artifact-tcu { --r: -1.3deg; }.artifact-dekang { --r: 1.5deg; }.artifact-data { --r: -.8deg; }.artifact-emotion { --r: 1deg; }.artifact-pill { --r: -1.2deg; }.artifact-book { --r: .9deg; }
   .artifact strong { font-size: clamp(2rem, 9vw, 3.2rem); }
   .artifact-note { position: static; margin-top: .9rem; opacity: 1; transform: none; }
   .board-map { display: none; }
